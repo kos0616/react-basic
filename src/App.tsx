@@ -4,10 +4,22 @@ import Todo from "./components/Todo";
 import Form from "./components/Form";
 import FilterButton from "./components/FilterButton";
 
-function App(props: {
-  tasks: Array<{ id: string; name: string; completed?: boolean }>;
-}) {
-  const [tasks, setTasks] = useState(props.tasks);
+type Task = { id: string; name: string; completed?: boolean };
+
+function App(props: { tasks: Array<Task> }) {
+  const [tasks, setTasks] = useState<Array<Task>>(props.tasks);
+
+  const [filter, setFilter] = useState<keyof typeof FILTER_MAP>("All");
+
+  const FILTER_MAP = {
+    All: () => true,
+    Active: (task: Task) => !task.completed,
+    Completed: (task: Task) => task.completed,
+  };
+
+  const FILTER_NAMES = Object.keys(FILTER_MAP) as Array<
+    keyof typeof FILTER_MAP
+  >;
 
   function addTask(name: string) {
     const newTask = { id: `todo-${nanoid()}`, name, completed: false };
@@ -48,15 +60,26 @@ function App(props: {
     setTasks(editedTaskList);
   }
 
-  const taskList = tasks?.map((task) => (
-    <Todo
-      id={task.id}
-      name={task.name}
-      completed={task.completed}
-      key={task.id}
-      toggleTaskCompleted={toggleTaskCompleted}
-      deleteTask={deleteTask}
-      editTask={editTask}
+  const taskList = tasks
+    ?.filter(FILTER_MAP[filter])
+    .map((task) => (
+      <Todo
+        id={task.id}
+        name={task.name}
+        completed={task.completed}
+        key={task.id}
+        toggleTaskCompleted={toggleTaskCompleted}
+        deleteTask={deleteTask}
+        editTask={editTask}
+      />
+    ));
+
+  const filterList = FILTER_NAMES.map((name) => (
+    <FilterButton
+      key={name}
+      name={name}
+      isPressed={name === filter}
+      onClick={() => setFilter(name)}
     />
   ));
 
@@ -65,11 +88,7 @@ function App(props: {
       <div className="todoapp stack-large">
         <h1>TodoMatic</h1>
         <Form onAdd={addTask}></Form>
-        <div className="filters btn-group stack-exception">
-          <FilterButton></FilterButton>
-          <FilterButton></FilterButton>
-          <FilterButton></FilterButton>
-        </div>
+        <div className="filters btn-group stack-exception">{filterList}</div>
         <h2 id="list-heading">{headingText}</h2>
         <ul
           role="list"

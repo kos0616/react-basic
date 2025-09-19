@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { nanoid } from "nanoid";
 import Todo from "./components/Todo";
 import Form from "./components/Form";
@@ -10,6 +10,8 @@ function App(props: { tasks: Array<Task> }) {
   const [tasks, setTasks] = useState<Array<Task>>(props.tasks);
 
   const [filter, setFilter] = useState<keyof typeof FILTER_MAP>("All");
+
+  const listHeadingRef = useRef<HTMLHeadingElement>(null);
 
   const FILTER_MAP = {
     All: () => true,
@@ -60,6 +62,24 @@ function App(props: { tasks: Array<Task> }) {
     setTasks(editedTaskList);
   }
 
+  function usePrevious(value: number) {
+    const ref = useRef(0);
+
+    useEffect(() => {
+      ref.current = value;
+    });
+
+    return ref.current;
+  }
+
+  const prevTaskLength = usePrevious(tasks.length);
+
+  useEffect(() => {
+    if (tasks.length < prevTaskLength) {
+      listHeadingRef.current?.focus();
+    }
+  }, [tasks.length, prevTaskLength]);
+
   const taskList = tasks
     ?.filter(FILTER_MAP[filter])
     .map((task) => (
@@ -89,7 +109,9 @@ function App(props: { tasks: Array<Task> }) {
         <h1>TodoMatic</h1>
         <Form onAdd={addTask}></Form>
         <div className="filters btn-group stack-exception">{filterList}</div>
-        <h2 id="list-heading">{headingText}</h2>
+        <h2 ref={listHeadingRef} tabIndex={-1} id="list-heading">
+          {headingText} {prevTaskLength}
+        </h2>
         <ul
           role="list"
           className="todo-list stack-large stack-exception"

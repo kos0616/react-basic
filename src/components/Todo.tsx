@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 function Todo(props: {
   name: string;
@@ -8,9 +8,12 @@ function Todo(props: {
   deleteTask: (id: string) => void;
   editTask: (id: string, newName: string) => void;
 }) {
+  const editFieldRef = useRef<HTMLInputElement>(null);
+  const editButtonRef = useRef<HTMLButtonElement>(null);
+
   const [isEditing, setEditing] = useState(false);
 
-  const [newName, setNewName] = useState("");
+  const [newName, setNewName] = useState(() => props.name);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setNewName(e.target.value);
@@ -23,6 +26,24 @@ function Todo(props: {
     setEditing(false);
   }
 
+  function usePrevious(value: boolean) {
+    const ref = useRef<boolean>(false);
+    useEffect(() => {
+      ref.current = value;
+    });
+    return ref.current;
+  }
+
+  const wasEditing = usePrevious(isEditing);
+
+  useEffect(() => {
+    if (!wasEditing && isEditing) {
+      editFieldRef.current?.focus();
+    } else if (wasEditing && !isEditing) {
+      editButtonRef.current?.focus();
+    }
+  }, [isEditing, wasEditing]);
+
   const editingTemplate = (
     <form onSubmit={handleSubmit} className="stack-small">
       <div className="form-group">
@@ -30,8 +51,10 @@ function Todo(props: {
           New name for {props.name}
         </label>
         <input
+          value={newName}
           onChange={handleChange}
           id={props.id}
+          ref={editFieldRef}
           className="todo-text"
           type="text"
         />
@@ -67,7 +90,15 @@ function Todo(props: {
         </label>
       </div>
       <div className="btn-group">
-        <button onClick={() => setEditing(true)} type="button" className="btn">
+        <button
+          onClick={() => {
+            setNewName(props.name);
+            setEditing(true);
+          }}
+          ref={editButtonRef}
+          type="button"
+          className="btn"
+        >
           Edit <span className="visually-hidden">{props.name}</span>
         </button>
         <button

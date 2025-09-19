@@ -3,10 +3,13 @@ import { nanoid } from "nanoid";
 import Todo from "./components/Todo";
 import Form from "./components/Form";
 import FilterButton from "./components/FilterButton";
+import ChatRoom from "./components/ChatRoom";
 
 type Task = { id: string; name: string; completed?: boolean };
 
 function App(props: { tasks: Array<Task> }) {
+  const [isShowingChatRoom, setIsShowingChatRoom] = useState(true);
+
   const [tasks, setTasks] = useState<Array<Task>>(props.tasks);
 
   const [filter, setFilter] = useState<keyof typeof FILTER_MAP>("All");
@@ -105,6 +108,10 @@ function App(props: { tasks: Array<Task> }) {
 
   return (
     <>
+      <button onClick={() => setIsShowingChatRoom(!isShowingChatRoom)}>
+        Toggle Chatroom
+      </button>
+      {isShowingChatRoom && <ChatRoom></ChatRoom>}
       <div className="todoapp stack-large">
         <h1>TodoMatic</h1>
         <Form onAdd={addTask}></Form>

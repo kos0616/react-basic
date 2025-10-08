@@ -4,16 +4,19 @@ import Todo from "./components/Todo";
 import Form from "./components/Form";
 import FilterButton from "./components/FilterButton";
 import ChatRoom from "./components/ChatRoom";
-import UseMemo from "./components/UseMemo";
-import UseCallback from "./components/UseCallback";
-import AsyncData from "./components/AsyncData";
 
 type Task = { id: string; name: string; completed?: boolean };
 
-function App(props: { tasks: Array<Task> }) {
+const DATA = [
+  { id: "todo-0", name: "Eat", completed: true },
+  { id: "todo-1", name: "Sleep", completed: false },
+  { id: "todo-2", name: "Repeat", completed: false },
+];
+
+function App(props: { tasks?: Array<Task> }) {
   const [isShowingChatRoom, setIsShowingChatRoom] = useState(true);
 
-  const [tasks, setTasks] = useState<Array<Task>>(props.tasks);
+  const [tasks, setTasks] = useState<Array<Task>>(props.tasks || DATA);
 
   const [filter, setFilter] = useState<keyof typeof FILTER_MAP>("All");
 
@@ -111,9 +114,6 @@ function App(props: { tasks: Array<Task> }) {
 
   return (
     <>
-      <AsyncData></AsyncData>
-      <UseCallback></UseCallback>
-      <UseMemo></UseMemo>
       <button onClick={() => setIsShowingChatRoom(!isShowingChatRoom)}>
         Toggle Chatroom
       </button>

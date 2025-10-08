@@ -1,14 +1,15 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useEffect } from "react";
 import styles from "./ChatRoom.module.scss";
 
 // 模擬一個聊天室連線的 API
-function createConnection(roomId: string) {
+function createConnection(_roomId: string) {
   return {
     connect() {
-      console.log(`🔌 Connecting to room: ${roomId}`);
+      // console.log(`🔌 Connecting to room: ${_roomId}`);
     },
     disconnect() {
-      console.log(`❌ Disconnected from room: ${roomId}`);
+      // console.log(`❌ Disconnected from room: ${_roomId}`);
     },
   };
 }

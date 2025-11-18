@@ -5,6 +5,9 @@ import UseMemo from "./pages/UseMemo.tsx";
 import UseCallback from "./pages/UseCallback.tsx";
 import AsyncData from "./pages/AsyncData.tsx";
 import ChatRoom from "./pages/ChatRoom/index.tsx";
+import ChatParty from "./pages/chat/index.tsx";
+import ChatLobby from "./pages/chat/lobby.tsx";
+import Error404 from "./pages/error404/index.tsx";
 
 const router = createBrowserRouter([
   {
@@ -26,6 +29,9 @@ const router = createBrowserRouter([
       { path: "/callback", Component: UseCallback },
       { path: "/async", Component: AsyncData },
       { path: "/chatroom", Component: ChatRoom },
+      { path: "/party", Component: ChatLobby },
+      { path: "/party/:room", Component: ChatParty },
+      { path: "*", Component: Error404 },
     ],
   },
 ]);
